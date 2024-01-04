@@ -14,19 +14,19 @@ class UserService {
 
     async Signup(userInputs) {
 
-        const { email, password, phone } = userInputs;
+        const {name, email, password, phone } = userInputs;
         try {
             let salt = await GenerateSalt();
 
             let userPassword = await GeneratePassword(password, salt);
 
-            const existingUser = await this.repository.UserCreate({ email, password: userPassword, phone, salt });
-            const token = await GenerateSignature({ email: email, _id: existingUser._id });
-            return FormateData({ id: existingUser._id, token });
+            const existingUser = await this.repository.UserCreate({name, email, password: userPassword, phone, salt });
+           // const token = await GenerateSignature({ email: email, _id: existingUser._id });
+            return ({success:true,message:"User added successfully", data:existingUser });
 
-        } catch (err) {
-            console.log("services Error")
-            throw new APIError("Data Not Found", err)
+        } catch (error) {
+            console.log(error)
+            return res.status(500).json({success:false})
         }
     }
 

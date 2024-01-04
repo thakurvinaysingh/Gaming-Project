@@ -8,9 +8,9 @@ module.exports = (app) => {
   app.post("/user/signup", async (req, res, next) => {
     try {
       
-      const { email, password, phone } = req.body;
-      const { data } = await service.Signup({ email, password, phone });
-      return res.json({success:"true",data});
+      const {username, email, password, phone } = req.body;
+      const  data  = await service.Signup({username, email, password, phone });
+      return res.json(data);
     } catch (err) {
       next(err);
     }

@@ -5,9 +5,10 @@ const { APIError, BadRequestError, STATUS_CODES } = require("../../utils/app-err
 const bcrypt = require('bcrypt');
 
 class UserRepository {
-  async UserCreate({ email, password, phone, salt }) {
+  async UserCreate({name, email, password, phone, salt }) {
     try {
       const user = new UserModel({
+        name,
         email,
         password,
         salt,
@@ -18,11 +19,8 @@ class UserRepository {
       return userResult;
     } catch (err) {
       console.log("repository Error")
-      throw new APIError(
-        "API Error",
-        STATUS_CODES.INTERNAL_ERROR,
-        "Unable to create User"
-      );
+      console.log(error);
+      return { success: false, message: 'Internal server error.' };
 
     }
   }
