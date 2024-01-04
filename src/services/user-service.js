@@ -50,7 +50,7 @@ class UserService {
                 if (ValidPassword) {
                     console.log("valid")
                     const token = await GenerateSignature({ email: existingUser.email, _id: existingUser._id })
-                    return ({ success:"true",message:"Login Successful!", Data:existingUser,token })
+                    return ({ success:"true",message:"Login Successful!", data:existingUser,token })
                 }
             }
             
