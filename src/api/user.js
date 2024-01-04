@@ -23,7 +23,7 @@ try {
   console.log("login")
   const  data  = await service.SignIn({email,password,phone});
   console.log("login")
-  return res.json({success:"true",data});
+  return res.json({data});
 } catch (error) {
  
   console.log(error)
