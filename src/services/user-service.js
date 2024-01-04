@@ -14,19 +14,19 @@ class UserService {
 
     async Signup(userInputs) {
 
-        const {name, email, password, phone } = userInputs;
+        const { name, email, password, phone } = userInputs;
         try {
             let salt = await GenerateSalt();
 
             let userPassword = await GeneratePassword(password, salt);
 
-            const existingUser = await this.repository.UserCreate({name, email, password: userPassword, phone, salt });
-           // const token = await GenerateSignature({ email: email, _id: existingUser._id });
-            return ({success:true,message:"User added successfully", data:existingUser });
+            const existingUser = await this.repository.UserCreate({ name, email, password: userPassword, phone, salt });
+            // const token = await GenerateSignature({ email: email, _id: existingUser._id });
+            return ({ success: true, message: "User added successfully", data: existingUser });
 
         } catch (error) {
             console.log(error)
-            return res.status(500).json({success:false})
+            return res.status(500).json({ success: false })
         }
     }
 
@@ -45,19 +45,19 @@ class UserService {
 
             if (existingUser) {
                 const ValidPassword = await ValidatePassword(password, existingUser.password, existingUser.salt)
-                if (!ValidPassword) return({ success:"false",message:"User Password  Not Match!" })
+                if (!ValidPassword) return ({ success: "false", message: "User Password  Not Match!" })
 
                 if (ValidPassword) {
                     console.log("valid")
                     const token = await GenerateSignature({ email: existingUser.email, _id: existingUser._id })
-                    return ({ success:"true",message:"Login is Successfully!", data:existingUser,token })
+                    return ({ success: "true", message: "Login is Successfully!", data: existingUser, token })
                 }
             }
-            
+
             return { success: true, message: ' User is Not Found' };
         } catch (error) {
             console.log(error)
-            return res.status(500).json({success:false})
+            return res.status(500).json({ success: false })
         }
     }
 
@@ -69,11 +69,11 @@ class UserService {
         try {
             console.log("child")
             const addressResult = await this.repository.CreateAddress({ _id, street, postalCode, city, country })
-            return FormateData(addressResult);
+            return ({ success: true, message: "Address is added Successfully!", data: addressResult });
 
-        } catch (err) {
-            console.error('Error in AddNewAddress:', err);
-            throw new APIError('Data Not found', err)
+        } catch (error) {
+            console.log(error)
+            return res.status(500).json({ success: false, message })
         }
 
 
@@ -84,7 +84,10 @@ class UserService {
         try {
             const existingCustomer = await this.repository.FindCustomerById({ id });
             console.log(existingCustomer)
-            return FormateData(existingCustomer);
+            if (existingCustomer) {
+                return ({ success: true, message: "list of all User Information!", data: existingCustomer });
+            }
+            return ({ success: false, message: "User is Not found!" })
 
         } catch (error) {
             console.error(error);
@@ -101,21 +104,21 @@ class UserService {
             expirationDate.setMinutes(expirationDate.getMinutes() + 15);
 
             const data = await this.repository.StoreOPT({ OTP, email, expirationDate })
+
             const emailHtml = `
             <p>Email:${email}</p>
             <p>Your Forget Password</p>
-            <p>OPT:${data.OPT}</p>
+            <p>OPT:${data.data.OTP}</p>
             <p>Please keep your account details secure.</p>
             <p>Please Login Your new Password </p>
         `;
             await sendEmail(email, 'Password Reset', emailHtml);
 
-
-            return { data, message: 'OPT send successfully Your Email.' };
+            return data;
 
         } catch (err) {
             console.log(err)
-            return null;
+            return { success: false, message: 'Check your Email Address!' };
         }
     }
 
@@ -127,11 +130,11 @@ class UserService {
 
             if (existingOPT && existingOPT.success) {
                 const currentDateTime = new Date();
-                
+
                 if (existingOPT.data.OTP === OTP) {
                     if (existingOPT.data.expirationDate > currentDateTime) {
 
-                        await this.repository.UpdatePass(email,newPassword)
+                        await this.repository.UpdatePass(email, newPassword)
                         console.log("Password updated ");
                         return { success: true, message: 'Password updated successfully.' };
                     } else {
@@ -144,24 +147,24 @@ class UserService {
                 }
             } else {
                 console.log("Invalid OPT.");
-                return { success: false, message: 'Invalid OPT.' };
+                return { success: false, message: 'Check Your Credential details.' };
             }
         } catch (error) {
             console.error(error);
             return { success: false, message: 'Internal server error.' };
         }
     }
-async ChangePassword(user,curentpassword,newPassword){
-try {
-  
-    const data = await this.repository.ChangePass(user,curentpassword,newPassword)
-    console.log("checkuser")
-    return data;
-} catch (error) {
-    console.error(error);
-    return { success: false, message: 'Internal server error.' };
-}
-}
+    async ChangePassword(user, curentpassword, newPassword) {
+        try {
+
+            const data = await this.repository.ChangePass(user, curentpassword, newPassword)
+           
+            return data;
+        } catch (error) {
+            console.error(error);
+            return { success: false, message: 'Check Your Credentials Details!' };
+        }
+    }
 
 }
 //--------function -------------//

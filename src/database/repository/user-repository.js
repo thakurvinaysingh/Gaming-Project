@@ -99,15 +99,15 @@ class UserRepository {
   }
 
   async StoreOPT({ OTP, email, expirationDate }) {
-    console.log(OTP, email, expirationDate)
+   
     try {
-      console.log("pass1")
+     
       const existingEmail = await UserModel.findOne({ email })
       // check the existing opt and deleted
       await OPTModel.findOneAndDelete({ email });
 
       if (existingEmail) {
-        console.log("pass1")
+       
         const newOPT = new OPTModel({
           OTP,
           email: existingEmail.email,
@@ -115,14 +115,14 @@ class UserRepository {
         });
 
         const data = await newOPT.save();
-        return data;
+        console.log("OTP",data.OTP)
+        return ({success:true,message:"OTP send successfully Your Email.",data});
       } else {
-         console.log("email is not found")
-         return null; 
+         return ({success:false,message:"Email is Not found"});
       }
     } catch (err) {
       console.log(err)
-      return null; 
+      return ({success:false,message:"Credential is Validation"});
     }
   }
 
@@ -136,7 +136,7 @@ class UserRepository {
          const OTP = existingOPT.OTP;
          return { success: true, data: { OTP, expirationDate } };
       } else {
-          return { success: false, message: 'OPT not found.' };
+          return { success: false, message: 'Email is Not Found.' };
       }
     } catch (error) {
         console.error(error);
@@ -190,12 +190,12 @@ async ChangePass(userId, currentPassword, newPassword) {
     user.salt = salt; 
     await user.save();
 
-    console.log("user info4");
+   
     return { success: true, message: 'Password changed successfully.' };
 
   } catch (error) {
     console.error(error);
-    return { success: false, message: 'Internal server error.' };
+    return { success: false, message: 'Check Your Credential Details!.' };
   }
 }
 

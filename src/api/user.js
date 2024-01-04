@@ -5,7 +5,7 @@
 module.exports = (app) => {
   const service = new UserService();
 
-  app.post("/user/signup", async (req, res, next) => {
+  app.post("/signup", async (req, res, next) => {
     try {
       
       const {name, email, password, phone } = req.body;
@@ -16,7 +16,7 @@ module.exports = (app) => {
     }
   });
 
-app.post('/user/login',async(req,res,next)=>{
+app.post('/login',async(req,res,next)=>{
   
 try {
   const {email,password,phone} = req.body;
@@ -39,7 +39,7 @@ try {
 
       const { street, postalCode, city, country } = req.body;
 
-      const { data } = await service.AddNewAddress(_id, {
+      const data  = await service.AddNewAddress(_id, {
         street,
         postalCode,
         city,
@@ -47,15 +47,16 @@ try {
       });
 
       return res.json(data);
-    } catch (err) {
-      next(err);
+    } catch (error) {
+      console.log(error)
+      return res.status(500).json({success:false})
     }
   });
 
   app.get("/user/profile", UserAuth, async (req, res, next) => {
     try {
       const { _id } = req.user;
-      const { data } = await service.GetProfile({ _id });
+      const data  = await service.GetProfile({ _id });
       return res.json(data);
     } catch (error) {
       next(err);
@@ -67,18 +68,18 @@ try {
 
      const {email} =req.body;
 
-     const {data,message } = await service.ForgetPassword(email)
+     const data = await service.ForgetPassword(email)
      if (data) {
 
-      return res.status(200).json({ success: true, data, message });
+      return res.status(200).json(data);
 
     } else {
       return res.status(404).json({ success: false, message: 'User not found for the given email.'});
     }
     } catch (error) {
 
-      console.log(error)
-      return res.status(500).json({success:false})
+      console.error(error);
+      return res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
   });
 
@@ -87,7 +88,7 @@ try {
       const {email, OTP, newPassword } = req.body;
         const data = await service.UpdatePassword(email,OTP,newPassword);
      
-     res.status(200).json({data})
+     res.status(200).json(data)
     
     } catch (error) {
 
@@ -105,7 +106,7 @@ try {
      
         const data = await service.ChangePassword(user,curentpassword,newPassword);
      
-     res.status(200).json({data})
+     res.status(200).json(data)
     
     } catch (error) {
 
