@@ -56,7 +56,7 @@ try {
       const { _id } = req.user;
       const { data } = await service.GetProfile({ _id });
       return res.json(data);
-    } catch (err) {
+    } catch (error) {
       next(err);
     }
   });
@@ -94,7 +94,24 @@ try {
       return res.status(500).json({success:false})
     }
   });
- 
+
+  app.post("/user/changepassword",UserAuth, async (req, res, next) => {
+    try {
+      const user = req.user._id;
+      console.log("user",user)
+     
+      const {curentpassword,newPassword } = req.body;
+     
+        const data = await service.ChangePassword(user,curentpassword,newPassword);
+     
+     res.status(200).json({data})
+    
+    } catch (error) {
+
+      console.log(error)
+      return res.status(500).json({success:false})
+    }
+  });
 
   app.post('/logout',UserAuth,async (req, res) => {
     const user = req.user

@@ -82,10 +82,12 @@ class UserService {
 
         try {
             const existingCustomer = await this.repository.FindCustomerById({ id });
+            console.log(existingCustomer)
             return FormateData(existingCustomer);
 
-        } catch (err) {
-            throw new APIError('Data Not found', err)
+        } catch (error) {
+            console.error(error);
+            return { success: false, message: 'Internal server error.' };
         }
     }
 
@@ -128,7 +130,7 @@ class UserService {
                 if (existingOPT.data.OTP === OTP) {
                     if (existingOPT.data.expirationDate > currentDateTime) {
 
-                        await this.repository.ChangePassword(email,newPassword)
+                        await this.repository.UpdatePass(email,newPassword)
                         console.log("Password updated ");
                         return { success: true, message: 'Password updated successfully.' };
                     } else {
@@ -148,7 +150,17 @@ class UserService {
             return { success: false, message: 'Internal server error.' };
         }
     }
-
+async ChangePassword(user,curentpassword,newPassword){
+try {
+  
+    const data = await this.repository.ChangePass(user,curentpassword,newPassword)
+    console.log("checkuser")
+    return data;
+} catch (error) {
+    console.error(error);
+    return { success: false, message: 'Internal server error.' };
+}
+}
 
 }
 //--------function -------------//

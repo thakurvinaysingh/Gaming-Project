@@ -2,6 +2,7 @@
 const { UserModel, AddressModel, OPTModel } = require("../models");
 const { GeneratePassword,GenerateSalt} = require("../../utils");
 const { APIError, BadRequestError, STATUS_CODES } = require("../../utils/app-errors");
+const bcrypt = require('bcrypt');
 
 class UserRepository {
   async UserCreate({ email, password, phone, salt }) {
@@ -92,15 +93,10 @@ class UserRepository {
     try {
       const existingCustomer = await UserModel.findById(id)
         .populate("address");
-
-
       return existingCustomer;
-    } catch (err) {
-      throw new APIError(
-        "API Error",
-        STATUS_CODES.INTERNAL_ERROR,
-        "Unable to Find Customer"
-      );
+    } catch (error) {
+      console.error(error);
+        return { success: false, message: 'Internal server error.' };
     }
   }
 
@@ -150,7 +146,7 @@ class UserRepository {
     }
 }
 
-async ChangePassword(email, newPassword) {
+async UpdatePass(email, newPassword) {
   try {
     console.log("email",email)
       const user = await this.FindEmail({email});
@@ -172,6 +168,36 @@ async ChangePassword(email, newPassword) {
   } catch (error) {
       console.error(error);
       return { success: false, message: 'Internal server error.' };
+  }
+}
+
+async ChangePass(userId, currentPassword, newPassword) {
+  try {
+    const user = await UserModel.findById(userId);
+
+    if (!user) {
+      return { success: false, message: 'User not found.' };
+    }
+
+    const passwordMatch = await bcrypt.compare(currentPassword, user.password);
+
+    if (!passwordMatch) {
+      return { success: false, message: 'Current password is incorrect.' };
+    }
+
+    // Generate salt and hash the new password
+    const salt = await GenerateSalt();
+    const hashedPassword = await GeneratePassword(newPassword, salt);
+    user.password = hashedPassword;
+    user.salt = salt; 
+    await user.save();
+
+    console.log("user info4");
+    return { success: true, message: 'Password changed successfully.' };
+
+  } catch (error) {
+    console.error(error);
+    return { success: false, message: 'Internal server error.' };
   }
 }
 
