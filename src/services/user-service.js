@@ -46,15 +46,15 @@ class UserService {
             if (existingUser) {
                 const ValidPassword = await ValidatePassword(password, existingUser.password, existingUser.salt)
                 if (!ValidPassword) return({ success:"false",message:"User Password  Not Match!" })
-                
+
                 if (ValidPassword) {
                     console.log("valid")
                     const token = await GenerateSignature({ email: existingUser.email, _id: existingUser._id })
-                    return ({ success:"true",message:"Login Successful!", existingUser,token })
+                    return ({ success:"true",message:"Login Successful!", Data:existingUser,token })
                 }
             }
             
-            return { success: false, message: ' User is Not Found' };
+            return { success: true, message: ' User is Not Found' };
         } catch (error) {
             console.log(error)
             return res.status(500).json({success:false})
