@@ -85,7 +85,7 @@ module.exports = (app) => {
     try {
 
       const { email } = req.body;
-      if (!street) {
+      if (!email) {
         return res.status(400).json({ success: false, message: "Please provide valid Email" });
       }
       const data = await service.ForgetPassword(email)
@@ -106,7 +106,7 @@ module.exports = (app) => {
   app.post("/user/updatepassword", async (req, res, next) => {
     try {
       const { email, OTP, newPassword } = req.body;
-      if (!OTP || !email || !city || country) {
+      if (!email || !OTP || !newPassword ) {
         return res.status(400).json({ success: false, message: "Please provide valid street, postalCode,city and country" });
       }
       const data = await service.UpdatePassword(email, OTP, newPassword);
