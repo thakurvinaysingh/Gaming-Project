@@ -9,6 +9,9 @@ module.exports = (app) => {
     try {
 
       const { name, email, password, phone } = req.body;
+      if (!email || !password || !phone) {
+        return res.status(400).json({ success: false, message: "Please provide valid email, password, and phone" });
+      }
       const data = await service.Signup({ name, email, password, phone });
       if (data) {
         return res.json(data);
@@ -28,7 +31,7 @@ module.exports = (app) => {
 
       // Check if any of the required fields is missing or empty
       if (!email || !password || !phone) {
-          return res.status(400).json({ success: false, message: "Please provide valid email, password, and phone" });
+        return res.status(400).json({ success: false, message: "Please provide valid email, password, and phone" });
       }
 
       const data = await service.SignIn({ email, password, phone });
@@ -51,7 +54,9 @@ module.exports = (app) => {
       const { _id } = req.user;
 
       const { street, postalCode, city, country } = req.body;
-
+      if (!street || !postalCode || !city || country) {
+        return res.status(400).json({ success: false, message: "Please provide valid street, postalCode,city and country" });
+      }
       const data = await service.AddNewAddress(_id, {
         street,
         postalCode,
@@ -80,7 +85,9 @@ module.exports = (app) => {
     try {
 
       const { email } = req.body;
-
+      if (!street) {
+        return res.status(400).json({ success: false, message: "Please provide valid Email" });
+      }
       const data = await service.ForgetPassword(email)
       if (data) {
 
@@ -99,6 +106,9 @@ module.exports = (app) => {
   app.post("/user/updatepassword", async (req, res, next) => {
     try {
       const { email, OTP, newPassword } = req.body;
+      if (!OTP || !email || !city || country) {
+        return res.status(400).json({ success: false, message: "Please provide valid street, postalCode,city and country" });
+      }
       const data = await service.UpdatePassword(email, OTP, newPassword);
 
       res.status(200).json(data)

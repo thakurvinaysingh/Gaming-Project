@@ -23,7 +23,7 @@ class UserService {
 
             const alreadyPhone = await this.repository.FindPhone({phone})
             if (alreadyPhone) {
-                return ({ success: false, message: "User is already Exist" });
+                return ({ success: false, message: "User is already Phone" });
             }
 
             let salt = await GenerateSalt();
