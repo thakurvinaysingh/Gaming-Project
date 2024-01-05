@@ -16,9 +16,18 @@ class UserService {
 
         const { name, email, password, phone } = userInputs;
         try {
+           const alreadyemail = await this.repository.FindEmail({email})
+            if (alreadyemail) {
+                return ({ success: false, message: "User is already Exist" });
+            }
+            const alreadyPhone = await this.repository.FindPhone({email})
+            if (alreadyPhone) {
+                return ({ success: false, message: "User is already Exist" });
+            }
             let salt = await GenerateSalt();
 
             let userPassword = await GeneratePassword(password, salt);
+
 
             const existingUser = await this.repository.UserCreate({ name, email, password: userPassword, phone, salt });
             // const token = await GenerateSignature({ email: email, _id: existingUser._id });
@@ -50,14 +59,14 @@ class UserService {
                 if (ValidPassword) {
                     console.log("valid")
                     const token = await GenerateSignature({ email: existingUser.email, _id: existingUser._id })
-                    return ({ success: "true", message: "Login is Successfully!", data: existingUser, token })
+                    return ({ success: "true", message: "Login  Successfully!", data: existingUser, token })
                 }
             }
 
             return { success: true, message: ' User is Not Found' };
         } catch (error) {
             console.log(error)
-            return res.status(500).json({ success: false })
+            return res.status(400).json({ success: false, message: 'Check your Inputs' })
         }
     }
 
@@ -158,7 +167,7 @@ class UserService {
         try {
 
             const data = await this.repository.ChangePass(user, curentpassword, newPassword)
-           
+
             return data;
         } catch (error) {
             console.error(error);
