@@ -37,7 +37,7 @@ class UserService {
 
         } catch (error) {
             console.log(error)
-            return res.status(500).json({ success: false })
+            return res.status(500).json({ success: false ,message:"check your Inputs "})
         }
     }
 
