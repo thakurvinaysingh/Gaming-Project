@@ -76,15 +76,15 @@ class UserService {
     async AddNewAddress(_id, userInputs) {
 
         const { street, postalCode, city, country } = userInputs;
-        console.log("child")
+       
         try {
-            console.log("child")
+            
             const addressResult = await this.repository.CreateAddress({ _id, street, postalCode, city, country })
-            return ({ success: true, message: "Address is added Successfully!", data: addressResult });
+            return ({ success: true, message: "Address added Successfully!", data: addressResult });
 
         } catch (error) {
             console.log(error)
-            return res.status(500).json({ success: false, message })
+            return res.status(500).json({ success: false, message:"Check Your Credentials!" })
         }
 
 

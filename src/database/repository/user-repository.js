@@ -74,7 +74,6 @@ class UserRepository {
 
 
   async CreateAddress({ _id, street, postalCode, city, country }) {
-    console.log("son")
 
     try {
       const profile = await UserModel.findById(_id);
@@ -94,11 +93,8 @@ class UserRepository {
 
       return await profile.save();
     } catch (err) {
-      throw new APIError(
-        "API Error",
-        STATUS_CODES.INTERNAL_ERROR,
-        "Error on Create Address"
-      );
+      console.error(err);
+      return { success: false, message: 'Created failure' };
     }
   }
 
@@ -109,7 +105,7 @@ class UserRepository {
       return existingCustomer;
     } catch (error) {
       console.error(error);
-      return { success: false, message: 'Internal server error.' };
+      return { success: false, message: 'User Not found' };
     }
   }
 
