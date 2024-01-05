@@ -25,7 +25,11 @@ module.exports = (app) => {
 
     try {
       const { email, password, phone } = req.body;
-      console.log("login")
+
+      // Check if any of the required fields is missing or empty
+      if (!email || !password || !phone) {
+          return res.status(400).json({ success: false, message: "Please provide valid email, password, and phone" });
+      }
 
       const data = await service.SignIn({ email, password, phone });
       if (data) {
