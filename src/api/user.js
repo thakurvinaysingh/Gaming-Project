@@ -142,7 +142,7 @@ module.exports = (app) => {
     const user = req.user
     console.log(user)
     if (user) {
-      res.status(200).json({ success: true, message: 'Logout successful' });
+      res.status(200).json({ success: true, message: 'Logout successfully' });
     } else {
       res.status(401).json({ success: false, message: 'User not authenticated' });
     }
