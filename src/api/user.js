@@ -27,12 +27,12 @@ module.exports = (app) => {
   app.post('/login', async (req, res, next) => {
 
     try {
-      const { email, password, phone } = req.body;
+      const { email, password,phone} = req.body;
 
       // Check if any of the required fields is missing or empty
-      if (!email || !password || !phone) {
-        return res.status(400).json({ success: false, message: "Please provide valid email, password, and phone" });
-      }
+      if (!(email || phone) || !password) {
+        return res.status(400).json({ success: false, message: "Please provide either a valid email or phone, and a password" });
+    }
 
       const data = await service.SignIn({ email, password, phone });
       if (data) {
