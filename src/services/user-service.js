@@ -56,12 +56,12 @@ class UserService {
 
             if (existingUser) {
                 const ValidPassword = await ValidatePassword(password, existingUser.password, existingUser.salt)
-                if (!ValidPassword) return ({ success: "false", message: "User Password  Not Match!" })
+                if (!ValidPassword) return ({ success:false, message: "User Password  Not Match!" })
 
                 if (ValidPassword) {
                     console.log("valid")
                     const token = await GenerateSignature({ email: existingUser.email, _id: existingUser._id })
-                    return ({ success: "true", message: "Login  Successfully!", data: existingUser, token })
+                    return ({ success: true, message: "Login  Successfully!", data: existingUser, token })
                 }
             }
 
