@@ -34,7 +34,7 @@ module.exports = (app) => {
         return res.status(400).json({ success: false, message: "Please provide either a valid email or phone, and a password" });
     }
 
-      const data = await service.SignIn({ email, password, phone });
+      const data = await service.SignIn({ email, password, phone },res);
       if (data) {
         return res.json(data);
       } else {
@@ -107,7 +107,7 @@ module.exports = (app) => {
     try {
       const { email, OTP, newPassword } = req.body;
       if (!email || !OTP || !newPassword ) {
-        return res.status(400).json({ success: false, message: "Please provide valid street, postalCode,city and country" });
+        return res.status(400).json({ success: false, message: "Please provide valid Email, OTP and Password" });
       }
       const data = await service.UpdatePassword(email, OTP, newPassword);
 

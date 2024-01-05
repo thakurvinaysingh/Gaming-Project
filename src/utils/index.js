@@ -20,9 +20,17 @@ module.exports.GenerateOTP = async () => {
  return await bcrypt.hash(password,salt);
  };
 
- module.exports.GenerateSignature = async(payload)=>{
+ module.exports.GenerateSignature = async(payload,res)=>{
     try {
-       return await jwt.sign(payload,APP_SECRET,{expiresIn:"30d"}); 
+       const token = await jwt.sign(payload,APP_SECRET,{expiresIn:"30d"}); 
+
+      // Set the token as a cookie
+        res.cookie('jwt', token, {
+            httpOnly: true,
+            maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+        });
+
+        return token;
     } catch (error) {
         console.log(error);
         return error;

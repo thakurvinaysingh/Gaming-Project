@@ -41,7 +41,7 @@ class UserService {
         }
     }
 
-    async SignIn(userInputs) {
+    async SignIn(userInputs,res) {
         const { email, password, phone } = userInputs;
         console.log("find inputs")
         try {
@@ -60,7 +60,7 @@ class UserService {
 
                 if (ValidPassword) {
                     console.log("valid")
-                    const token = await GenerateSignature({ email: existingUser.email, _id: existingUser._id })
+                    const token = await GenerateSignature({ email: existingUser.email, _id: existingUser._id },res)
                     return ({ success: true, message: "Login  Successfully!", data: existingUser, token })
                 }
             }
@@ -150,11 +150,11 @@ class UserService {
                         return { success: true, message: 'Password updated successfully.' };
                     } else {
                         console.log("OPT is expired.");
-                        return { success: false, message: 'OPT is expired.' };
+                        return { success: false, message: 'OTP is expired.' };
                     }
                 } else {
                     console.log("OPT is not existing.");
-                    return { success: false, message: 'OPT is not existing.' };
+                    return { success: false, message: 'OTP is not existing.' };
                 }
             } else {
                 console.log("Invalid OPT.");
