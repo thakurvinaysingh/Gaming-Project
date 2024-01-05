@@ -18,12 +18,12 @@ class UserService {
         try {
            const alreadyemail = await this.repository.FindEmail({email})
             if (alreadyemail) {
-                return ({ success: false, message: "User is already Exist" });
+                return ({ success: false, message: "Email is already Exist!" });
             }
 
             const alreadyPhone = await this.repository.FindPhone({phone})
             if (alreadyPhone) {
-                return ({ success: false, message: "User is already Phone" });
+                return ({ success: false, message: "Phone is already Exist!" });
             }
 
             let salt = await GenerateSalt();
