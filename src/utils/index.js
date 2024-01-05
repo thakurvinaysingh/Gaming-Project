@@ -47,11 +47,28 @@ module.exports.GenerateOTP = async () => {
 
  module.exports.ValidateSignature = async (req) => {
     try {
-      const signature = req.get("Authorization");
-      console.log(signature);
-      const payload = await jwt.verify(signature.split(" ")[1], APP_SECRET);
-      req.user = payload;
-      return true;
+      // const signature = req.get("Authorization");
+      // console.log(signature);
+      // const payload = await jwt.verify(signature.split(" ")[1], APP_SECRET);
+      // req.user = payload;
+      // return true;
+      let signature;
+
+        if (req.headers.authorization) {
+            signature = req.headers.authorization.split(" ")[1];
+        }
+        if (!signature && req.cookies.jwt) {
+            signature = req.cookies.jwt;
+        }
+
+        if (!signature) {
+            console.log('Token not found in headers or cookies');
+            return false;
+        }
+        const payload = await jwt.verify(signature, APP_SECRET);
+        req.user = payload;
+        return true;
+        
     } catch (error) {
       console.log(error);
       return false;

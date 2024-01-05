@@ -34,7 +34,7 @@ module.exports = (app) => {
         return res.status(400).json({ success: false, message: "Please provide either a valid email or phone, and a password" });
     }
 
-      const data = await service.SignIn({ email, password, phone },res);
+      const data = await service.SignIn({ email, password, phone });
       if (data) {
         return res.json(data);
       } else {
