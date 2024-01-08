@@ -54,7 +54,7 @@ module.exports = (app) => {
       const { _id } = req.user;
 
       const { street, postalCode, city, country } = req.body;
-      if (!street || !postalCode || !city || country) {
+      if (!street || !postalCode || !city || !country) {
         return res.status(400).json({ success: false, message: "Please provide valid street, postalCode,city and country" });
       }
       const data = await service.AddNewAddress(_id, {
@@ -77,7 +77,8 @@ module.exports = (app) => {
       const data = await service.GetProfile({ _id });
       return res.json(data);
     } catch (error) {
-      next(err);
+      console.log(error)
+      return res.status(500).json({ success: false ,message:"Internal error"})
     }
   });
 

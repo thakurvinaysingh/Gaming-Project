@@ -145,9 +145,9 @@ class UserService {
                 if (existingOPT.data.OTP === OTP) {
                     if (existingOPT.data.expirationDate > currentDateTime) {
 
-                        await this.repository.UpdatePass(email, newPassword)
+                      const result =  await this.repository.UpdatePass(email, newPassword)
                         console.log("Password updated ");
-                        return { success: true, message: 'Password updated successfully.' };
+                        return result;
                     } else {
                         console.log("OPT is expired.");
                         return { success: false, message: 'OTP is expired.' };

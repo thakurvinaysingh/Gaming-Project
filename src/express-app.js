@@ -1,8 +1,9 @@
 const express = require("express");
 const cors = require("cors");
-const {user} = require("./api")
+const {user,bankAccount} = require("./api")
 const cookieParser = require('cookie-parser')
-const HandleError = require("./utils/error-handler")
+// const bodyParser = require('body-parser')
+// const HandleError = require("./utils/error-handler")
 
 module.exports =async(app)=>{
     app.use(cookieParser());
@@ -13,12 +14,13 @@ module.exports =async(app)=>{
         origin: 'http://localhost:3000'
       }));
       
-    app.use(express.static(__dirname + '/public'));
-
+    // app.use(express.static(__dirname + 'src/public/uploads'));
+    app.use(express.static('src/public'));
+    // app.use(bodyParser.urlencoded({ extended: true }));
     //api handle
     user(app);
-
+    bankAccount(app);
 
     //error handle
-    app.use(HandleError);
+    // app.use(HandleError);
 }

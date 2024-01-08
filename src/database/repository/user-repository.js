@@ -159,16 +159,22 @@ class UserRepository {
     try {
       console.log("email", email)
       const user = await this.FindEmail({ email });
-      console.log("email", user)
+     
       if (user) {
+        if (typeof newPassword !== 'string') {
+          console.log("Invalid new password format");
+          return { success: false, message: 'Invalid new password format.' };
+      }
         const salt = await GenerateSalt();
-
+       
         const hashedPassword = await GeneratePassword(newPassword, salt);
+       
         user.password = hashedPassword;
         user.salt = salt;
+       
         await user.save();
         console.log("Password updated successfully");
-        return { success: true, message: 'Password updated successfully.' };
+        return { success: true, message: 'Password updated successfully!' };
       } else {
         // No user found with the provided email
         console.log("User not found");
