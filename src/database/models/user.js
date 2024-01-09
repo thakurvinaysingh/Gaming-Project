@@ -9,7 +9,9 @@ const userSchema = new Schema({
     salt: String,
     phone: String,
     address:[
-        { type: Schema.Types.ObjectId, ref: 'address' }
+        { type: Schema.Types.ObjectId, 
+            ref: 'address'
+         }
     ],
     image: {
         type: String,
@@ -20,7 +22,30 @@ const userSchema = new Schema({
         enum:["super-admin","admin","user"],
         default:"user"
     },
-    wallet: { type: Schema.Types.ObjectId, ref: 'wallet',default: null},
+    wallet: { 
+        type: Schema.Types.ObjectId,
+         ref: 'wallet',default: null
+    },
+    lastrecharge:{
+        type:String
+    },
+    s_promocode:{
+        type:String,
+        default:"Not Found"
+    },
+    promocode:{
+        type:String,
+        default:"Not Found"
+    },
+    comment:{
+        type:String,
+        default:"Not Found!"
+    },
+    status:{
+        type:Boolean,
+        default:true
+    }
+
 },{
     toJSON: {
         transform(doc, ret){

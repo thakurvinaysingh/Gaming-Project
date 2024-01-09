@@ -33,7 +33,7 @@ class BankService {
         try {
 
             const addressResult = await this.repository.UpdateCreateBank(req, res, { bankName, accountNumber, accountHolderName, ifscCode, upiId, imageBarcode },id)
-            return ({data: addressResult });
+            return  addressResult ;
 
         } catch (error) {
             console.log(error)

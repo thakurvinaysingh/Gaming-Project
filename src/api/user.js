@@ -149,4 +149,22 @@ module.exports = (app) => {
     }
   });
 
+  //-------------------------------User CRUD Operation------------------------------------//
+
+  app.post('/status/:id', async (req, res) => {
+   try {
+    const Id = req.params.id;
+    const data = await service.updateStatus(Id)
+    if(data){
+       return res.status(200).json(data)
+    }else{
+      return res.status(300).json({success:false,message:"Status Not Update!"})
+    }
+    
+   } catch (error) {
+      console.log(error)
+      return res.status(500).json({ success: false })
+   }
+  });
+
 };

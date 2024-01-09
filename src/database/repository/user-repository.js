@@ -216,6 +216,34 @@ class UserRepository {
     }
   }
 
+  async Status(Id){
+    try {
+     
+      console.log("user infor",Id)
+      const user = await UserModel.findById(Id);
+      console.log("user",user)
+      if(user){
+       
+
+        if (user.status == true) {
+          user.status = false;
+          await user.save();
+          return { success: true, message: "Status changed to InActive!" };
+      } else {
+          user.status = true;
+          await user.save();
+          return { success: true, message: "Status changed to Active!" };
+      }
+        
+      }else{
+        return {success:false,message:"User Not found"}
+      }
+    } catch (error) {
+      console.log(error)
+      return {success:false,message:"Check Your User Id"}
+    }
+  }
+
 
 }
 

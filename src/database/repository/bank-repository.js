@@ -48,7 +48,7 @@ class BankRepository {
             },
             { new: true });
            if(bank){
-            return bank;
+            return {success:true,message:"Update Successfully!",data:bank};
            }else{
             return {success:false,message:"Failed to Update Bank Account Details!"}
            }

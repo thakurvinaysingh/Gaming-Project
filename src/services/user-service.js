@@ -177,6 +177,17 @@ class UserService {
         }
     }
 
+    async updateStatus(Id){
+        try {
+            console.log("UserId ",Id)
+            const result = await this.repository.Status(Id)
+            return result;
+        } catch (error) {
+            console.log(error)
+            return { success:true, message:"Check Your User Id"}
+        }
+    }
+
 }
 //--------function -------------//
 
