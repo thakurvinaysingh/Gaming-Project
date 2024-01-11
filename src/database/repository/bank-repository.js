@@ -6,7 +6,9 @@ class BankRepository {
         try {
 
             const file = req.file;
-            if (!file) return res.status(400).json('No image in the request')
+            if (!file) {
+                return res.status(400).json({ success: false, message: 'No image in the request' });
+            }
 
             const fileName = file.filename
             const basePath = `${req.protocol}://${req.get('host')}/uploads/`;
@@ -20,7 +22,11 @@ class BankRepository {
                 imageBarcode: `${basePath}${fileName}`
             });
             const bankResult = await bank.save();
-            return bankResult;
+            if (bankResult) {
+                return bankResult;
+            } else {
+                return { success: false, message: 'Failed to save bank details.' };
+            }
         } catch (err) {
             console.log("repository Error")
             console.log(err);
@@ -72,7 +78,7 @@ class BankRepository {
             }
         } catch (error) {
             console.log(error);
-            return { success: false, message: 'Invalid Bank Account Id!' };
+            return { success: false, message: 'Invalid Bank Account Id' };
         }
     }
   
@@ -88,7 +94,23 @@ class BankRepository {
             }
         } catch (error) {
             console.log(error);
-            return { success: false, message: 'Invalid Bank Acount Id!' };
+            return { success: false, message: 'Invalid Bank Acount Id' };
+        }
+    }
+
+    async GetBankListAll(){
+        try {
+           
+            const list = await BankAccount.find();
+            if (list.length > 0) {
+                
+                return { success: true, message: "Bank Account Details retrieved successfully!", data: list };
+            } else {
+                return { success: false, message: "No Bank Account Details found." };
+            }
+        } catch (error) {
+            console.log(error);
+            return { success: false, message: 'Data Not found' };
         }
     }
 }

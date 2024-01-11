@@ -244,7 +244,62 @@ class UserRepository {
     }
   }
 
+  async UpdateUser(userId,userInputs){
+    try {
+      const{ name, email, phone,lastrecharge,s_promocode,promocode,comment,wallet, }= userInputs;
+      console.log("Id",userId);
+      const data = await UserModel.findByIdAndUpdate(userId,{
+        name, 
+        email, 
+        phone,
+        lastrecharge,
+        s_promocode,
+        promocode,
+        comment,
+        wallet,
+      },
+      { new: true });
 
+      if(data){
+       return {success:true,message:"Update Successfully!",data}
+      }else{
+       return {success:false,message:"Failed to Update Bank Account Details!"}
+      }
+    } catch (error) {
+      console.log(error)
+      return {success:false,message:"Check Your User Id"}
+    }
+  }
+
+  async DeleteUser(userId){
+    try {
+      console.log(userId);
+      const Details = await UserModel.findByIdAndDelete( userId )
+      if (Details) {
+          return {success:true,message:"User Id is Deleted!", data:Details}
+      } else {
+          return {success:false,message:"Data not found."}
+      }
+  } catch (error) {
+      console.log(error);
+      return { success: false, message: 'Invalid User Id' };
+  }
+  }
+async userAllList(){
+  try {
+           
+    const list = await UserModel.find();
+    if (list.length > 0) {
+        
+        return { success: true, message: "User Details retrieved successfully!", data: list };
+    } else {
+        return { success: false, message: "No User Details found." };
+    }
+} catch (error) {
+    console.log(error);
+    return { success: false, message: 'Data Not found' };
+}
+}
 }
 
 

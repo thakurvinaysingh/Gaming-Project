@@ -159,12 +159,62 @@ module.exports = (app) => {
        return res.status(200).json(data)
     }else{
       return res.status(300).json({success:false,message:"Status Not Update!"})
-    }
-    
+    }  
    } catch (error) {
       console.log(error)
-      return res.status(500).json({ success: false })
+      return res.status(500).json({ success: false,message:"Internal server Error" })
    }
   });
 
+  app.post('/user/update/:id',async(req,res)=>{
+    try {
+      const { name, email, phone,lastrecharge,s_promocode,promocode,comment,wallet, } = req.body;
+      if (!name || !email || !phone || !lastrecharge || !s_promocode || !promocode || !comment || wallet) {
+        return res.status(400).json({ success: false, message: "Please provide valid Name, Email,Phone ,LasRecharge,S_Promocode, Promocode and Comment" });
+    }
+    const userInputs = { name, email, phone,lastrecharge,s_promocode,promocode,comment,wallet, }
+      const userId = req.params.id;
+      console.log("user",userId)
+      const data = await service.UserUpdate(userId,userInputs);
+      if(data){
+        return res.status(200).json(data)
+      }else{
+        return res.status(300).json({success:false,message:"Data Not found"})
+      }
+    } catch (error) {
+      console.log(error)
+      return res.status(500).json({success:false,message:"Internal Server Error"})
+    }
+  })
+
+  app.get('/user/delete/:id',async (req,res)=>{
+    try {
+      const userId = req.params.id;
+      const data = await service.UserDelete(userId);
+      if (data) {
+          return res.json( data );
+      } else {
+          return res.status(404).json({ success: false, message: "Data not found" });
+      }
+
+    } catch (error) {
+      console.log(error)
+      return res.status(500).json({success:false,message:"Internal Server Error"})
+    }
+  })
+
+  app.get("/user/list", async (req,res)=>{
+    try {
+       
+        const data = await service.allUserList();
+        if (data) {
+            return res.json( data );
+        } else {
+            return res.status(404).json({ success: false, message: "Data not found!" });
+        }
+    } catch (error) {
+        console.log(error)
+        return res.status(503).json({success:true,message:"Internal Error"})
+    }
+})
 };

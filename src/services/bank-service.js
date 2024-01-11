@@ -60,9 +60,19 @@ class BankService {
          return result;
         } catch (error) {
             console.log(error)
-            return res.status(503).json({ success: false, message: "Data Not found" })
+            return res.status(400).json({ success: false, message: "Data Not found" })
         }
 
+    }
+    async AllListBank(){
+        try {
+            
+            const result = await this.repository.GetBankListAll()
+            return result;
+        } catch (error) {
+            console.log(error)
+            return {success:false,message:"Data Not found"}
+        }
     }
 
 }

@@ -10,10 +10,10 @@ module.exports = (app) => {
 
 
             const { bankName, accountNumber, accountHolderName, ifscCode, upiId, imageBarcode } = req.body;
+            const file = req.file;
 
-
-            if (!bankName || !accountNumber || !accountHolderName || !ifscCode || !upiId) {
-                return res.status(400).json({ success: false, message: "Please provide valid BankName, AccountNumber, AccountHolderName, IFScCode,upiId and Barcode " });
+            if (!bankName || !accountNumber || !accountHolderName || !ifscCode || !upiId ||!file) {
+                return res.status(400).json({ success: false, message: "Please provide valid BankName, AccountNumber, AccountHolderName, IFScCode,upiId and ImageBarcode " });
             }
             const userInputs = { bankName, accountNumber, accountHolderName, ifscCode, upiId, imageBarcode }
 
@@ -34,10 +34,11 @@ module.exports = (app) => {
            const id = req.params.id;
 
             const { bankName, accountNumber, accountHolderName, ifscCode, upiId, imageBarcode } = req.body;
+            const file = req.file;
 
 
-            if (!bankName || !accountNumber || !accountHolderName || !ifscCode || !upiId) {
-                return res.status(400).json({ success: false, message: "Please provide valid BankName, AccountNumber, AccountHolderName, IFScCode,upiId and Barcode " });
+            if (!bankName || !accountNumber || !accountHolderName || !ifscCode || !upiId ||!file) {
+                return res.status(400).json({ success: false, message: "Please provide valid BankName, AccountNumber, AccountHolderName, IFScCode,upiId and imageBarcode " });
             }
             const userInputs = { bankName, accountNumber, accountHolderName, ifscCode, upiId, imageBarcode }
 
@@ -84,6 +85,20 @@ module.exports = (app) => {
             return res.status(503).json({ success: false, message: "check Your Credentials" })
         }
 
+    })
+    app.get("/list", async (req,res)=>{
+        try {
+           
+            const data = await service.AllListBank();
+            if (data) {
+                return res.json( data );
+            } else {
+                return res.status(404).json({ success: false, message: "Data not found" });
+            }
+        } catch (error) {
+            console.log(error)
+            return res.status(503).json({success:true,message:"Internal Error"})
+        }
     })
 
 }

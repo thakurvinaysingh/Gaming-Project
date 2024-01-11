@@ -1,6 +1,9 @@
 const mongoose = require('mongoose');
-
 const Schema = mongoose.Schema;
+
+
+
+
 
 const userSchema = new Schema({
     name:String,
@@ -24,7 +27,8 @@ const userSchema = new Schema({
     },
     wallet: { 
         type: Schema.Types.ObjectId,
-         ref: 'wallet',default: null
+         ref: 'wallet',
+         default: null
     },
     lastrecharge:{
         type:String
@@ -56,5 +60,7 @@ const userSchema = new Schema({
     },
     timestamps: true
 });
+
+
 
 module.exports =  mongoose.model('user', userSchema);

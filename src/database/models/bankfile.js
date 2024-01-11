@@ -19,6 +19,9 @@ const bankAccountSchema = new Schema({
         type: String,
         required: true
       },
+      mobile:{
+        type:String
+      },
       upiId: {
         type: String,
         required: true

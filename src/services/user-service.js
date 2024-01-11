@@ -184,7 +184,40 @@ class UserService {
             return result;
         } catch (error) {
             console.log(error)
-            return { success:true, message:"Check Your User Id"}
+            return { success:false, message:"Check Your User Id"}
+        }
+    }
+
+    async UserUpdate(userId,userInputs){
+        try {
+            console.log("UserId ",userId)
+            const result = await this.repository.UpdateUser(userId,userInputs)
+            return result;  
+        } catch (error) {
+            console.log(error)
+            return { success:false, message:"Check Your User Id"}  
+        }
+    }
+
+    async UserDelete(userId){
+        try {
+            console.log("UserId ",userId)
+            const result = await this.repository.DeleteUser(userId) 
+            return result; 
+        } catch (error) {
+            console.log(error)
+            return { success:false, message:"Check Your User Id"}  
+        }
+    }
+
+    async allUserList(){
+        try {
+            
+            const result = await this.repository.userAllList()
+            return result;
+        } catch (error) {
+            console.log(error)
+            return {success:false,message:"Data Not found"}
         }
     }
 
