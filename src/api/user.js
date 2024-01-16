@@ -7,8 +7,8 @@ module.exports = (app) => {
 
   app.post("/signup", async (req, res, next) => {
     try {
-
-      const { name, email, password, phone } = req.body;
+        // userId = 1000+;
+      const {userId, name, email, password, phone } = req.body;
       if (!email || !password || !phone) {
         return res.status(400).json({ success: false, message: "Please provide valid email, password, and phone" });
       }
@@ -27,14 +27,14 @@ module.exports = (app) => {
   app.post('/login', async (req, res, next) => {
 
     try {
-      const { email, password,phone} = req.body;
+      const { email, password, phone } = req.body;
 
       // Check if any of the required fields is missing or empty
       if (!(email || phone) || !password) {
         return res.status(400).json({ success: false, message: "Please provide either a valid email or phone, and a password" });
-    }
+      }
 
-      const data = await service.SignIn({ email, password, phone },res);
+      const data = await service.SignIn({ email, password, phone }, res);
       if (data) {
         return res.json(data);
       } else {
@@ -67,7 +67,7 @@ module.exports = (app) => {
       return res.json(data);
     } catch (error) {
       console.log(error)
-      return res.status(500).json({ success: false ,message:"Internal error"})
+      return res.status(500).json({ success: false, message: "Internal error" })
     }
   });
 
@@ -78,7 +78,7 @@ module.exports = (app) => {
       return res.json(data);
     } catch (error) {
       console.log(error)
-      return res.status(500).json({ success: false ,message:"Internal error"})
+      return res.status(500).json({ success: false, message: "Internal error" })
     }
   });
 
@@ -107,7 +107,7 @@ module.exports = (app) => {
   app.post("/user/updatepassword", async (req, res, next) => {
     try {
       const { email, OTP, newPassword } = req.body;
-      if (!email || !OTP || !newPassword ) {
+      if (!email || !OTP || !newPassword) {
         return res.status(400).json({ success: false, message: "Please provide valid Email, OTP and Password" });
       }
       const data = await service.UpdatePassword(email, OTP, newPassword);
@@ -151,70 +151,139 @@ module.exports = (app) => {
 
   //-------------------------------User CRUD Operation------------------------------------//
 
-  app.post('/status/:id', async (req, res) => {
-   try {
-    const Id = req.params.id;
-    const data = await service.updateStatus(Id)
-    if(data){
-       return res.status(200).json(data)
-    }else{
-      return res.status(300).json({success:false,message:"Status Not Update!"})
-    }  
-   } catch (error) {
-      console.log(error)
-      return res.status(500).json({ success: false,message:"Internal server Error" })
-   }
-  });
-
-  app.post('/user/update/:id',async(req,res)=>{
+  app.post('/user/status/:id', async (req, res) => {
     try {
-      const { name, email, phone,lastrecharge,s_promocode,promocode,comment,wallet, } = req.body;
-      if (!name || !email || !phone || !lastrecharge || !s_promocode || !promocode || !comment || wallet) {
-        return res.status(400).json({ success: false, message: "Please provide valid Name, Email,Phone ,LasRecharge,S_Promocode, Promocode and Comment" });
-    }
-    const userInputs = { name, email, phone,lastrecharge,s_promocode,promocode,comment,wallet, }
-      const userId = req.params.id;
-      console.log("user",userId)
-      const data = await service.UserUpdate(userId,userInputs);
-      if(data){
+      const Id = req.params.id;
+      const data = await service.updateStatus(Id)
+      if (data) {
         return res.status(200).json(data)
-      }else{
-        return res.status(300).json({success:false,message:"Data Not found"})
+      } else {
+        return res.status(300).json({ success: false, message: "Status Not Update!" })
       }
     } catch (error) {
       console.log(error)
-      return res.status(500).json({success:false,message:"Internal Server Error"})
+      return res.status(500).json({ success: false, message: "Internal server Error" })
+    }
+  });
+
+  app.post('/user/update/:id', async (req, res) => {
+    try {
+      const { name, email, phone, lastrecharge, s_promocode, promocode, comment, wallet, } = req.body;
+      if (!name || !email || !phone || !lastrecharge || !s_promocode || !promocode || !comment || wallet) {
+        return res.status(400).json({ success: false, message: "Please provide valid Name, Email,Phone ,LasRecharge,S_Promocode, Promocode and Comment" });
+      }
+      const userInputs = { name, email, phone, lastrecharge, s_promocode, promocode, comment, wallet, }
+      const userId = req.params.id;
+      console.log("user", userId)
+      const data = await service.UserUpdate(userId, userInputs);
+      if (data) {
+        return res.status(200).json(data)
+      } else {
+        return res.status(300).json({ success: false, message: "Data Not found" })
+      }
+    } catch (error) {
+      console.log(error)
+      return res.status(500).json({ success: false, message: "Internal Server Error" })
     }
   })
 
-  app.get('/user/delete/:id',async (req,res)=>{
+  app.get('/user/delete/:id', async (req, res) => {
     try {
       const userId = req.params.id;
       const data = await service.UserDelete(userId);
       if (data) {
-          return res.json( data );
+        return res.json(data);
       } else {
-          return res.status(404).json({ success: false, message: "Data not found" });
+        return res.status(404).json({ success: false, message: "Data not found" });
       }
 
     } catch (error) {
       console.log(error)
-      return res.status(500).json({success:false,message:"Internal Server Error"})
+      return res.status(500).json({ success: false, message: "Internal Server Error" })
     }
   })
 
-  app.get("/user/list", async (req,res)=>{
+  app.get("/user/list", async (req, res) => {
     try {
-       
-        const data = await service.allUserList();
-        if (data) {
-            return res.json( data );
-        } else {
-            return res.status(404).json({ success: false, message: "Data not found!" });
-        }
+
+      const data = await service.allUserList();
+      if (data) {
+        return res.json(data);
+      } else {
+        return res.status(404).json({ success: false, message: "Data not found!" });
+      }
     } catch (error) {
-        console.log(error)
-        return res.status(503).json({success:true,message:"Internal Error"})
+      console.log(error)
+      return res.status(500).json({ success: false, message: "Internal Error" })
     }
-})
+  })
+
+  //---------------------------transaction Api here--------------------------------------------------//
+  app.post("/user/transaction", UserAuth, async (req, res) => {
+    try {
+      const userId = req.user._id
+      if (!userId) {
+        return res.status(404).json({ success: false, message: "User Not Found!" });
+      }
+
+      const { name, phone, paymentType, amount, transactionId } = req.body;
+
+      if (!name || !phone || !paymentType || !amount || !transactionId) {
+        return res.status(400).json({ success: false, message: "Please provide valid Name,Phone ,amount ,payment_Type and Transaction" });
+      } 
+
+      const userInputs = { name, phone, paymentType, amount, transactionId }
+      console.log("User", userId)
+
+      const data = await service.UserTransaction(userId,userInputs)
+
+      if (data) {
+        return res.json(data);
+      } else {
+        return res.status(404).json({ success: false, message: "Data not found!" });
+      }
+    } catch (error) {
+      console.log(error)
+      return res.status(500).json({ success: false, message: "Internal Server Error" })
+    }
+  })
+  app.post("/user/transaction/status/:id", UserAuth, async (req, res) => {
+    try { 
+      const {status} = req.body; 
+      const adminId = req.user._id
+      const TranId = req.params.id
+      //  console.log("userId",TranId)
+      //  console.log("admin",adminId)
+      if (!TranId) {
+        return res.status(404).json({ success: false, message: "User Not Found!" });
+      }
+      const data = await service.UserStatusTransaction(TranId,adminId,status)
+
+      if (data) {
+        return res.json(data);
+      } else {
+        return res.status(404).json({ success: false, message: "Data not found!" });
+      }
+    } catch (error) {
+      console.log(error)
+      return res.status(500).json({ success: false, message: "Internal Server Error" })
+    }
+  })
+
+
+  app.get("/user/transaction/list",async (req,res)=>{
+    try {
+
+      const data = await service.UserTransactionList();
+      if (data) {
+        return res.json(data);
+      } else {
+        return res.status(404).json({ success: false, message: "Data not found!" });
+      }
+    } catch (error) {
+      console.log(error)
+      return res.status(500).json({ success: false, message: "Internal Server Error" })
+    }
+  })
+  //---------------------------------------End---------------------------------------------------------//
 };

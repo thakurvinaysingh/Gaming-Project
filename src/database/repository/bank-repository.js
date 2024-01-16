@@ -78,7 +78,7 @@ class BankRepository {
             }
         } catch (error) {
             console.log(error);
-            return { success: false, message: 'Invalid Bank Account Id' };
+            return { success: false, message: 'Invalid Bank Account Id!!' };
         }
     }
   
@@ -98,7 +98,7 @@ class BankRepository {
         }
     }
 
-    async GetBankListAll(){
+    async ListAllBankAccount(){
         try {
            
             const list = await BankAccount.find();

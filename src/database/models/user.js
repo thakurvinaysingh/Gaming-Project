@@ -1,11 +1,8 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-
-
-
-
 const userSchema = new Schema({
+    userId: { type: Number, required: true, unique: true },
     name:String,
     email: String,
     password: String,
@@ -25,11 +22,10 @@ const userSchema = new Schema({
         enum:["super-admin","admin","user"],
         default:"user"
     },
-    wallet: { 
-        type: Schema.Types.ObjectId,
-         ref: 'wallet',
-         default: null
-    },
+    wallet: {
+        type: Number,
+        default: 0
+      },
     lastrecharge:{
         type:String
     },
@@ -59,7 +55,8 @@ const userSchema = new Schema({
         }
     },
     timestamps: true
-});
+}
+);
 
 
 

@@ -64,10 +64,10 @@ class BankService {
         }
 
     }
-    async AllListBank(){
+    async BankAccountAllList(){
         try {
             
-            const result = await this.repository.GetBankListAll()
+            const result = await this.repository.ListAllBankAccount()
             return result;
         } catch (error) {
             console.log(error)

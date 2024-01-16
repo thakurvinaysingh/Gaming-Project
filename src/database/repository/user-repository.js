@@ -1,5 +1,5 @@
 //Dealing with data base opertion
-const { UserModel, AddressModel, OPTModel } = require("../models");
+const { UserModel, AddressModel, OPTModel,Transaction,counterModel } = require("../models");
 const { GeneratePassword, GenerateSalt } = require("../../utils");
 const { APIError, BadRequestError, STATUS_CODES } = require("../../utils/app-errors");
 const bcrypt = require('bcrypt');
@@ -7,7 +7,14 @@ const bcrypt = require('bcrypt');
 class UserRepository {
   async UserCreate({ name, email, password, phone, salt }) {
     try {
+      const counter = await counterModel.findByIdAndUpdate(
+        { _id: 'userId' },
+        { $inc: { sequence_value: 1 } },
+        { new: true, upsert: true }
+      );
+
       const user = new UserModel({
+        userId: counter.sequence_value,
         name,
         email,
         password,
@@ -216,15 +223,17 @@ class UserRepository {
     }
   }
 
+//-------------------------------User Mangement/ CRUD Operation-------------------------------------//
+
   async Status(Id){
+    console.log("status Id",Id)
     try {
      
       console.log("user infor",Id)
       const user = await UserModel.findById(Id);
       console.log("user",user)
       if(user){
-       
-
+        console.log("user",user)
         if (user.status == true) {
           user.status = false;
           await user.save();
@@ -240,7 +249,7 @@ class UserRepository {
       }
     } catch (error) {
       console.log(error)
-      return {success:false,message:"Check Your User Id"}
+      return {success:false,message:"Check Your User Id !"}
     }
   }
 
@@ -300,7 +309,96 @@ async userAllList(){
     return { success: false, message: 'Data Not found' };
 }
 }
+//-------------------------------User Mangement/ CRUD Operation-------------------------------------//
+
+
+//-------------------------------User Transaction Tracker-------------------------------------//
+
+async TransactionUser(userId,userInputs){
+  try {
+    const { name, phone, paymentType, amount, transactionId } = userInputs;      
+    const date = new Date();
+  
+    const newTransaction = new Transaction ({
+      userId,
+      name,
+      phone,
+      paymentType,
+      amount,
+      date,
+      transactionId,
+      
+    });
+    const data = await newTransaction.save();
+    if (data) {     
+        return { success: true, message: "Transaction added Successfully!",data };
+    } else {
+        return { success: false, message: "No User Details found." };
+    }
+} catch (error) {
+    console.log(error);
+    return { success: false, message: 'Check Your Credentials!' };
+}
 }
 
+async ListUserTransaction(){
+  try {
+           
+    const list = await Transaction.find();
+    if (list.length > 0) {
+        
+        return { success: true, message: "User Details retrieved successfully!", data: list };
+    } else {
+        return { success: false, message: "No User Details found." };
+    }
+} catch (error) {
+    console.log(error);
+    return { success: false, message: 'Data Not found' };
+}
+}
 
+async TransactionId(TranId){
+  try {
+    const user = await Transaction.findById(TranId);
+    console.log("user")
+    if(user){
+     return user;
+    }else{
+      return {success:false,message:"User Not found"}
+    }
+  } catch (error) {
+    console.log(error)
+    return {success:false,message:"Check Your User Id"}
+  }
+}
+async AdminId(adminId){
+  try {
+    const admin = await UserModel.findById(adminId);
+    if(admin){
+     return admin;
+    }else{
+      return {success:false,message:"Admin Not found"}
+    }
+  } catch (error) {
+    console.log(error)
+    return {success:false,message:"Check Your User Id"}
+  }
+}
+
+async UserId(Id){
+  try {
+    const user = await UserModel.findById(Id);
+    if(user){
+     return user;
+    }else{
+      return {success:false,message:"User Not found"}
+    }
+  } catch (error) {
+    console.log(error)
+    return {success:false,message:"Check Your User Id"}
+  }
+}
+//-------------------------------User Transaction Tracker-------------------------------------//
+
+}
 module.exports = UserRepository;

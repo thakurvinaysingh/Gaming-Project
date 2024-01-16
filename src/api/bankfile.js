@@ -29,7 +29,7 @@ module.exports = (app) => {
         }
     });
 
-    app.post("/bankaccount/:id", uploadOptions.single('imageBarcode'), async (req, res, next) => {
+    app.post("/bankaccount/update/:id", uploadOptions.single('imageBarcode'), async (req, res, next) => {
         try {
            const id = req.params.id;
 
@@ -53,7 +53,7 @@ module.exports = (app) => {
             return res.status(503).json({ success: false, message: "check Your Credentials" })
         }
     });
-    app.get("/bankaccount/:id", async (req, res) => {
+    app.get("/bankaccount/single/:id", async (req, res) => {
         try {
             const BankId = req.params.id;
             const data = await service.GetbankAccount(BankId);
@@ -86,10 +86,10 @@ module.exports = (app) => {
         }
 
     })
-    app.get("/list", async (req,res)=>{
+    app.get("/bankaccount/list", async (req,res)=>{
         try {
            
-            const data = await service.AllListBank();
+            const data = await service.BankAccountAllList();
             if (data) {
                 return res.json( data );
             } else {

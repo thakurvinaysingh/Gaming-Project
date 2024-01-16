@@ -16,12 +16,12 @@ class UserService {
 
         const { name, email, password, phone } = userInputs;
         try {
-           const alreadyemail = await this.repository.FindEmail({email})
+            const alreadyemail = await this.repository.FindEmail({ email })
             if (alreadyemail) {
                 return ({ success: false, message: "Email is already Exist!" });
             }
 
-            const alreadyPhone = await this.repository.FindPhone({phone})
+            const alreadyPhone = await this.repository.FindPhone({ phone })
             if (alreadyPhone) {
                 return ({ success: false, message: "Phone is already Exist!" });
             }
@@ -37,11 +37,11 @@ class UserService {
 
         } catch (error) {
             console.log(error)
-            return res.status(500).json({ success: false ,message:"check your Inputs "})
+            return res.status(500).json({ success: false, message: "check your Inputs " })
         }
     }
 
-    async SignIn(userInputs,res) {
+    async SignIn(userInputs, res) {
         const { email, password, phone } = userInputs;
         console.log("find inputs")
         try {
@@ -56,11 +56,11 @@ class UserService {
 
             if (existingUser) {
                 const ValidPassword = await ValidatePassword(password, existingUser.password, existingUser.salt)
-                if (!ValidPassword) return ({ success:false, message: "User Password  Not Match!" })
+                if (!ValidPassword) return ({ success: false, message: "User Password  Not Match!" })
 
                 if (ValidPassword) {
                     console.log("valid")
-                    const token = await GenerateSignature({ email: existingUser.email, _id: existingUser._id },res)
+                    const token = await GenerateSignature({ email: existingUser.email, _id: existingUser._id }, res)
                     return ({ success: true, message: "Login  Successfully!", data: existingUser, token })
                 }
             }
@@ -76,15 +76,15 @@ class UserService {
     async AddNewAddress(_id, userInputs) {
 
         const { street, postalCode, city, country } = userInputs;
-       
+
         try {
-            
+
             const addressResult = await this.repository.CreateAddress({ _id, street, postalCode, city, country })
-            return ({ success: true, message: "Address added Successfully!", data: addressResult });
+            return addressResult;
 
         } catch (error) {
             console.log(error)
-            return res.status(500).json({ success: false, message:"Check Your Credentials!" })
+            return res.status(500).json({ success: false, message: "Check Your Credentials!" })
         }
 
 
@@ -145,7 +145,7 @@ class UserService {
                 if (existingOPT.data.OTP === OTP) {
                     if (existingOPT.data.expirationDate > currentDateTime) {
 
-                      const result =  await this.repository.UpdatePass(email, newPassword)
+                        const result = await this.repository.UpdatePass(email, newPassword)
                         console.log("Password updated ");
                         return result;
                     } else {
@@ -177,52 +177,133 @@ class UserService {
         }
     }
 
-    async updateStatus(Id){
+    //-------------------------------User mangement / CRUD Operation ----------------------------------------//
+
+    async updateStatus(Id) {
         try {
-            console.log("UserId ",Id)
+            console.log("UserId ", Id)
             const result = await this.repository.Status(Id)
             return result;
         } catch (error) {
             console.log(error)
-            return { success:false, message:"Check Your User Id"}
+            return { success: false, message: "Check Your User Id" }
         }
     }
 
-    async UserUpdate(userId,userInputs){
+    async UserUpdate(userId, userInputs) {
         try {
-            console.log("UserId ",userId)
-            const result = await this.repository.UpdateUser(userId,userInputs)
-            return result;  
+            console.log("UserId ", userId)
+            const result = await this.repository.UpdateUser(userId, userInputs)
+            return result;
         } catch (error) {
             console.log(error)
-            return { success:false, message:"Check Your User Id"}  
+            return { success: false, message: "Check Your User Id" }
         }
     }
 
-    async UserDelete(userId){
+    async UserDelete(userId) {
         try {
-            console.log("UserId ",userId)
-            const result = await this.repository.DeleteUser(userId) 
-            return result; 
+            console.log("UserId ", userId)
+            const result = await this.repository.DeleteUser(userId)
+            return result;
         } catch (error) {
             console.log(error)
-            return { success:false, message:"Check Your User Id"}  
+            return { success: false, message: "Check Your User Id" }
         }
     }
 
-    async allUserList(){
+    async allUserList() {
         try {
-            
+
             const result = await this.repository.userAllList()
             return result;
         } catch (error) {
             console.log(error)
-            return {success:false,message:"Data Not found"}
+            return { success: false, message: "Data Not found" }
+        }
+    }
+    //-------------------------------User mangement / CRUD Operation ----------------------------------------//
+
+    //-------------------------------User Transaction Tracker-----------------------------------------------//
+
+    async UserTransaction(userId, userInputs) {
+        try {
+            console.log("userId", userId)
+            const result = await this.repository.TransactionUser(userId, userInputs)
+            if (result) {
+                return result;
+            } else {
+                return { success: false, message: "Check Your user Id" }
+            }
+
+        } catch (error) {
+            console.log(error)
+            return { success: false, message: "Invalid User Id!" }
         }
     }
 
+    async UserTransactionList() {
+        try {
+
+            const result = await this.repository.ListUserTransaction()
+            return result;
+        } catch (error) {
+            console.log(error)
+            return { success: false, message: "Data Not found" }
+        }
+    }
+
+    async UserStatusTransaction(TranId, adminId, status) {
+        try {
+
+            const transaction = await this.repository.TransactionId(TranId)
+            const admin = await this.repository.AdminId(adminId)
+            console.log("user", transaction)
+            console.log("admin", admin)
+            if (!transaction || !admin) {
+                return { success: false, message: "User or Admin not found" };
+            }
+            if (transaction.status === 'pending') {
+                if (status === '1') {
+                    // Update the status of the transaction to 'approved'
+                    transaction.status = 'approved';
+                    await transaction.save();
+
+                    // Transfer the amount to the user's wallet
+                    console.log("userId", transaction.userId);
+                    const user = await this.repository.UserId(transaction.userId);
+
+                    console.log("user", user);
+                    if (user) {
+                        user.wallet += transaction.amount;
+                        await user.save();
+                        return { success: true, message: "Transaction status updated Approved successfully" };
+                    } else {
+                        return { success: false, message: "User not found for the transaction" };
+                    }
+                } else if (status === '0') {
+                    // If the status is 'cancel', update the transaction status to 'cancel'
+                    transaction.status = 'cancel';
+                    await transaction.save();
+                    return { success: true, message: "Transaction status updated Cancel successfully" };
+                } else {
+                    return { success: false, message: "Invalid status provided" };
+                }
+            } else {
+                return { success: false, message: "Transaction is not pending for approval" };
+            }
+
+        } catch (error) {
+            console.log(error)
+            return { success: false, message: "Check Your Credentials!" }
+        }
+    }
+
+    //-------------------------------User Transaction Tracker-----------------------------------------------//
+
+
 }
-//--------function -------------//
+
 
 
 //------------------------------------//
