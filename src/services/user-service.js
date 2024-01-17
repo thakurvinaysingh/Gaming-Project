@@ -1,3 +1,4 @@
+// scr/services/user-service.js
 const { UserRepository } = require("../database");
 const { OPTModel } = require("../database/models");
 const { GeneratePassword, GenerateSalt, GenerateSignature, FormateData, ValidatePassword, GenerateOTP, sendEmail } = require("../utils");
@@ -96,7 +97,7 @@ class UserService {
             const existingCustomer = await this.repository.FindCustomerById({ id });
             console.log(existingCustomer)
             if (existingCustomer) {
-                return ({ success: true, message: "list of all User Information!", data: existingCustomer });
+                return ({ success: true, message: "User profile found", data: existingCustomer });
             }
             return ({ success: false, message: "User is Not found!" })
 
@@ -222,6 +223,21 @@ class UserService {
             return { success: false, message: "Data Not found" }
         }
     }
+
+    async GetSingle(userId) {
+        try {
+            const existingCustomer = await this.repository.FindSingleUser(userId);
+            console.log(existingCustomer)
+            if (existingCustomer) {
+                return existingCustomer;
+            }
+            return ({ success: false, message: "User Not found!" })
+
+        } catch (error) {
+            console.error(error);
+            return { success: false, message: 'Invalid user Id' };
+        }
+    }
     //-------------------------------User mangement / CRUD Operation ----------------------------------------//
 
     //-------------------------------User Transaction Tracker-----------------------------------------------//
@@ -261,7 +277,7 @@ class UserService {
             console.log("user", transaction)
             console.log("admin", admin)
             if (!transaction || !admin) {
-                return { success: false, message: "User or Admin not found" };
+                return { success: false, message: "Invalid Id" };
             }
             if (transaction.status === 'pending') {
                 if (status === '1') {
@@ -299,12 +315,69 @@ class UserService {
         }
     }
 
-    //-------------------------------User Transaction Tracker-----------------------------------------------//
+    //------------------------------------------- end-----------------------------------------------//
 
+    //-------------------------------User withdraw tyhe Amount-------------------------------------------//
+    async CreateWithdrawal(userId, userInputs) {
+        try {
+            console.log("userId", userId)
+            const { amount, bankName, accountNumber, accountHolderName, ifscCode, upiId } = userInputs
+
+            const addressResult = await this.repository.WithdrawalCreated({ userId, amount, bankName, accountNumber, accountHolderName, ifscCode, upiId })
+            return addressResult;
+        } catch (error) {
+            console.log(error)
+            return { success: false, message: "Invalid Credentials" }
+        }
+    }
+
+    async ListWithdrawal() {
+        try {
+            const result = await this.repository.WithdrawalList()
+            return result;
+        } catch (error) {
+            console.log(error)
+            return { success: false, message: "Data Not found" }
+        }
+    }
+    async WithdrawalStatus(admin, withdrawal_id, status) {
+        try {
+
+            const Withdrawal = await this.repository.Withdrawal_Id(withdrawal_id)
+            const admin_Id = await this.repository.AdminId(admin)
+            console.log("user", Withdrawal)
+            console.log("admin", admin_Id)
+            if (!Withdrawal || !admin_Id) {
+                return { success: false, message: "Invalid Id" };
+            }
+            if (Withdrawal.status === 'pending') {
+                console.log("pending")
+                if (status === '1') {
+                    console.log("1")
+                    Withdrawal.status = 'approved';
+                    await Withdrawal.save();
+                    return { success: true, message: "Withdrawal status updated Approved successfully" };
+
+                } else if (status === '0') {
+
+                    Withdrawal.status = 'cancel';
+                    await Withdrawal.save();
+                    return { success: true, message: "Withdrawal status updated Cancel successfully" };
+                } else {
+                    return { success: false, message: "Invalid status provided" };
+                }
+            } else {
+                return { success: false, message: "Withdrawal is not pending for approval" };
+            }
+
+        } catch (error) {
+            console.log(error)
+            return { success: false, message: "Check Your Credentials!" }
+        }
+    }
+
+    //-------------------------------------------end------------------------------------------//
 
 }
 
-
-
-//------------------------------------//
 module.exports = UserService;
